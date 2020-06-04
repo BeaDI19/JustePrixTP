@@ -47,8 +47,36 @@ def index():
 
 @app.route('/', methods=['GET', 'POST'])
 def jeux():
+    if request.form['estimation'] == "-1":
+        estimation = float(request.form['estimation'])
+        params = {
+        "ApiKey": "8825dcca-9426-4cc9-83f1-bb6c829bb453",
+        "ProductRequest": {
+            "ProductIdList": [
+                request.form['Id']
+            ],
+            "Scope": {
+                "Offers": "false",
+                "AssociatedProducts": "false",
+                "Images": "false",
+                "Ean": "false"
+                }
+                }
+                }
 
-    params = {
+        r = requests.post('https://api.cdiscount.com/OpenApi/json/GetProduct', data=json.dumps(params))
+        product = json.loads(r.text)
+        prix = product['Products']
+        print(product['Products'])
+        prix = float(prix)
+        if prix < estimation:
+            print("prix inferieur")
+        elif prix > estimation:
+            print("prix supérieur")
+        elif prix == estimation:
+            return render_template('gagne.html', produit="")
+    else:
+        params = {
         "ApiKey": "8825dcca-9426-4cc9-83f1-bb6c829bb453",
         "ProductRequest": {
             "ProductIdList": [
