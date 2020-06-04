@@ -11,23 +11,20 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 </head>
 <body>
-  {% for produit in produits %}
-  <h1>Tu joue avec  : {{produit["Name"]}}</h1>
+  <h1>Tu joue avec  : {{produit.Name}}</h1>
   <p>Image :</p>
-  <img src="{{produit["MainImageUrl"]}}" />
+  <img src="{{produit.ImgUrl}}" />
   <h2>Quel est ton prix ?</h2>
   <form method="POST" target="/">
-  <input type="hidden" name="Id" value="{{produit["Id"]}}">
+  <input type="hidden" name="Id" value="{{produit.Id}}">
   <input type="text" name="estimation" value="" maxlength="8">
       <input type="submit" value="Estimer" />
       </form>
-{% endfor %}
-  {% if produits.resultat is false %}
-  <h2>C'est moins chère que cela</h2>
+  {% if produit.resultat is false %}
+  <h2>C'est moins chère que {{produit.estimation}} €</h2>
   {% endif %}
-  {% if produits.resultat is true %}
-  <h2>C'est plus chère que cela</h2>
+  {% if produit.resultat is true %}
+  <h2>C'est plus chère que  {{produit.estimation}} €</h2>
   {% endif %}
-
 </body>
 </html>

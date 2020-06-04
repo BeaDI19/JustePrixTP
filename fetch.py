@@ -48,45 +48,67 @@ def index():
 @app.route('/', methods=['GET', 'POST'])
 def jeux():
     if request.form['estimation'] == "-1":
+        params = {
+            "ApiKey": "8825dcca-9426-4cc9-83f1-bb6c829bb453",
+            "ProductRequest": {
+                "ProductIdList": [
+                    request.form['Id']
+                ],
+                "Scope": {
+                    "Offers": "false",
+                    "AssociatedProducts": "false",
+                    "Images": "false",
+                    "Ean": "false"
+                    }
+                    }
+                    }
+        r = requests.post('https://api.cdiscount.com/OpenApi/json/GetProduct', data=json.dumps(params))
+        return render_template('jeux2.html', produits=json.loads(r.text)['Products'])
+    elif request.form['estimation'] != "-1":
         estimation = float(request.form['estimation'])
         params = {
-        "ApiKey": "8825dcca-9426-4cc9-83f1-bb6c829bb453",
-        "ProductRequest": {
-            "ProductIdList": [
-                request.form['Id']
-            ],
-            "Scope": {
-                "Offers": "false",
-                "AssociatedProducts": "false",
-                "Images": "false",
-                "Ean": "false"
+            "ApiKey": "8825dcca-9426-4cc9-83f1-bb6c829bb453",
+            "ProductRequest": {
+                "ProductIdList": [
+                    request.form['Id']
+                    ],
+                "Scope": {
+                    "Offers": "false",
+                    "AssociatedProducts": "false",
+                    "Images": "false",
+                    "Ean": "false"
                 }
                 }
                 }
 
         r = requests.post('https://api.cdiscount.com/OpenApi/json/GetProduct', data=json.dumps(params))
-        product = json.loads(r.text)
-        prix = product['Products']
-        print(product['Products'])
-        prix = float(prix)
-        if prix < estimation:
-            print("prix inferieur")
-        elif prix > estimation:
-            print("prix supérieur")
-        elif prix == estimation:
-            return render_template('gagne.html', produit="")
+        data = json.loads(r.text)['Products']
+        for info in data:
+            id = info['Id']
+            prix = info['BestOffer']['SalePrice']
+            ImgUrl = info['MainImageUrl']
+            nom = info['Name']
+        #print(prix)
+        if float(prix) < float(estimation):
+            payload = {'resultat': False, 'Id': id, 'estimation': estimation, 'ImgUrl': ImgUrl, 'Name': nom}
+            return render_template('jeux3.html', produit=payload)
+        elif float(prix) > float(estimation):
+            payload = {'resultat': True, 'Id': id, 'estimation': estimation, 'ImgUrl': ImgUrl, 'Name': nom}
+            return render_template('jeux3.html', produit=payload)
+        elif float(prix) == float(estimation):
+            return render_template('gagne.html', produit=prix)
     else:
         params = {
-        "ApiKey": "8825dcca-9426-4cc9-83f1-bb6c829bb453",
-        "ProductRequest": {
-            "ProductIdList": [
-                request.form['Id']
-            ],
-            "Scope": {
-                "Offers": "false",
-                "AssociatedProducts": "false",
-                "Images": "false",
-                "Ean": "false"
+            "ApiKey": "8825dcca-9426-4cc9-83f1-bb6c829bb453",
+            "ProductRequest": {
+                "ProductIdList": [
+                    request.form['Id']
+                    ],
+                "Scope": {
+                    "Offers": "false",
+                    "AssociatedProducts": "false",
+                    "Images": "false",
+                    "Ean": "false"
                 }
                 }
                 }
