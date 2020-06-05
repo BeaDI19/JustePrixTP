@@ -2,9 +2,10 @@
 import requests
 import json
 import cgi, cgitb
-from flask import Flask, render_template, request
+import secrets
+from flask import Flask, render_template, request, session, redirect, url_for
 app = Flask(__name__, template_folder='./html')
-
+app.config["SECRET_KEY"] = "h0DWgSEjBIU7tNZQ"
 
 @app.route('/')
 def index():
@@ -90,6 +91,8 @@ def jeux():
             nom = info['Name']
         #print(prix)
         if float(prix) < float(estimation):
+            sdata = {'essai': 1, 'estimation': estimation}
+            session["data"] = json.dumps(sdata)
             payload = {'resultat': False, 'Id': id, 'estimation': estimation, 'ImgUrl': ImgUrl, 'Name': nom}
             return render_template('jeux3.html', produit=payload)
         elif float(prix) > float(estimation):
